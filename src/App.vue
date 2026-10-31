@@ -4,7 +4,7 @@ import { content as c } from './content'
 const opened = ref(false), confirmed = ref(false), progress = ref(0), journey = ref(null), heading = ref(null)
 const tg = window.Telegram?.WebApp
 const motionReduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches
-const letterStyle = computed(() => ({ '--pull': progress.value }))
+const letterStyle = computed(() => ({ '--pull': progress.value, '--release': Math.max(0, (progress.value - .8) / .2) }))
 function haptic() { try { tg?.HapticFeedback?.impactOccurred('light') } catch {} }
 function syncScroll() {
  if (!opened.value || !journey.value) return
@@ -38,7 +38,7 @@ onUnmounted(() => { window.removeEventListener('scroll', syncScroll); window.rem
     <div class="envelope-scene" :class="{ extracted: progress > .85 }">
      <div class="envelope-back" aria-hidden="true"></div>
      <div class="flap" aria-hidden="true"></div>
-     <article class="letter" :inert="!opened || progress < .85" :aria-hidden="!opened || progress < .85">
+     <div class="letter-window"><article class="letter" :inert="!opened || progress < .85" :aria-hidden="!opened || progress < .85">
       <div class="letter-frame">
        <template v-if="!confirmed">
         <p class="eyebrow">{{ c.insideLabel }}</p><div class="ornament" aria-hidden="true">◇</div>
@@ -50,7 +50,7 @@ onUnmounted(() => { window.removeEventListener('scroll', syncScroll); window.rem
         <p class="eyebrow">{{ c.confirmedLabel }}</p><div class="ornament" aria-hidden="true">◇</div><div class="confirmed-content"><span class="confirmation-mark" aria-hidden="true">✓</span><h1 ref="heading" tabindex="-1">{{ c.confirmedTitle }}</h1><p class="letter-description">{{ c.confirmedText }}</p><p class="summary">{{ c.date }} · {{ c.time }}</p></div><button class="gold-button" @click="confirmed = false">{{ c.back }}</button><p class="local-note">{{ c.localNote }}</p>
        </template>
       </div>
-     </article>
+     </article></div>
      <div class="pocket" aria-hidden="true"><div class="pocket-left"></div><div class="pocket-right"></div><div class="pocket-bottom"></div></div>
      <button class="wax-seal" :disabled="opened" @click="open" :aria-label="c.open"><svg viewBox="0 0 48 60" aria-hidden="true"><path d="M15 52Q33 29 28 8M24 33Q9 31 12 21Q24 22 24 33M27 24Q38 20 38 11Q27 13 27 24M19 43Q7 43 8 34Q19 34 19 43M28 14Q18 11 23 3Q30 7 28 14M23 36Q37 36 40 26Q27 26 23 36"/></svg></button>
     </div>
